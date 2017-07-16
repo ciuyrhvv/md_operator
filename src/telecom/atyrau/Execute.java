@@ -2,13 +2,23 @@ package telecom.atyrau;
 
 //author Galiakhmetov Zarif
 import org.apache.commons.net.ftp.*;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
 public class Execute {
 
-  private  String mode; Logger log; IniFile ini; MyFTP f; String fileMask; String StringYYYYMMDD;
+  private String mode; 
+  private Logger log; 
+  private IniFile ini;
+  private MyFTP f; 
+  private String fileMask; 
+  private String StringYYYYMMDD;
 
   public Execute(String mode){
     this.log = new Logger();
@@ -17,16 +27,16 @@ public class Execute {
     this.f = null;
     this.fileMask = null; 
     this.StringYYYYMMDD = 
-    		getWorkDate(Integer.parseInt( this.ini.getString("settings","days_back","-1")));
+    		getWorkDate(Integer.parseInt(this.
+    				ini.getString("settings","days_back","-1")));
     this.mode = mode;
   }
   
   public void close(){
-	this.log.close();
-	
+	this.log.close();	
   }
 
-  protected start() {
+  protected void start() {
     try {
       clearFolder(ini.getString("settings","local_dir");      
       downloadFiles();
@@ -46,7 +56,7 @@ public class Execute {
     }
   }
 
-  private clearFolder(String localDir) {
+  private void clearFolder(String localDir) {
     File dir = new File(localDir);
     if (!dir.exists())
       dir.mkdir();
@@ -55,10 +65,12 @@ public class Execute {
       file.delete();
   }
    
-  private ArrayList getFilesDB() {
+private ArrayList getFilesDB() {
+	FileReader fr;
+	BufferedReader br;
     try{
-       FileReader fr = new FileReader(this.mode+".txt");
-       BufferedReader br = new BuffedReader(fr);       
+       fr = new FileReader(this.mode+".txt");
+       BufferedReader br = new BufferedReader(fr);       
        String strLine;
        ArrayList ar = new ArrayList();
        while ((strLine = br.readLine()) != null) {
@@ -66,24 +78,26 @@ public class Execute {
        }  
        return ar;
     } finally {
-      if (fs != null) {
-        fs.close;
+	if (fr != null) {
+        fr.close();
       }
       if (br != null) {
-        br.close;
+        br.close();
       }       
     }   
   }
-  protected downloadFiles(){
+  protected void downloadFiles(){
     try {
-      String hostname = ini.getString(mode,"hostname");
-      String username = ini.getString(mode,"username");
-      String password = ini.getString(mode,"password");
-      String remoteDir = ini.getString(mode,"remote_dir");
-      String localDir = ini.getString(mode,"local_dir");
+      String hostname = ini.getString(mode,"hostname","qqq");
+      String username = ini.getString(mode,"username","qqq");
+      String password = ini.getString(mode,"password","qqq");
+      String remoteDir = ini.getString(mode,"remote_dir","qqq");
+      String localDir = ini.getString(mode,"local_dir","qqq");
       f = new MyFTP(hostname, username, password);
       f.connect();
-      log.info("Downloading files. Local directory " + localDir + "; Remote host parameters:" + username + "@" + hostname + ":" + remoteDir);
+      log.add("info","Downloading files. Local directory " + 
+    		  localDir + "; Remote host parameters:" + 
+    		  username + "@" + hostname + ":" + remoteDir);
 
       f.downloadFiles(localDir, remoteDir, fileMask, getFilesDB());
     } finally {
@@ -91,18 +105,20 @@ public class Execute {
     }    
   }
 
-  protected uploadFilesToArch(){
+  protected void uploadFilesToArch(){
     try {
-      String hostname = ini.getString("arch","hostname");
-      String username = ini.getString("arch","username");
-      String password = ini.getString("arch","password");
-      String remoteDir = ini.getString("arch","remote_dir");
+      String hostname = ini.getString("arch","hostname","qqq");
+      String username = ini.getString("arch","username","qqq");
+      String password = ini.getString("arch","password","qqq");
+      String remoteDir = ini.getString("arch","remote_dir","qqq");
+      String localDir = ini.getString("settings", "local_dir", "qqq")
       f = new MyFTP(hostname, username, password);
       f.connect();
       if (!remoteDir.endsWith("/"))
         remoteDir = remoteDir + "/";
     
-      log.info "Uploading files to ARCH. Remote host parameters:" + username + "@" + hostname + ":" + remoteDir;
+      log.add("info", "Uploading files to ARCH. Remote host parameters:" + 
+         username + "@" + hostname + ":" + remoteDir);
 
       f.uploadFiles(localDir,
         remoteDir + StringYYYYMMDD.substring(0, 4) + "/" +
@@ -111,15 +127,16 @@ public class Execute {
       f.disconnect();
     }  
 
-  protected uploadFilesToMD(){  
+  protected void uploadFilesToMD(){  
     try {
-      String hostname = ini.getString("md","hostname");
-      String username = ini.getString("md","username");
-      String password = ini.getString("md","password");
-      String remoteDir = ini.getString("md","remote_dir"); 
+      String hostname = ini.getString("md","hostname","qqq");
+      String username = ini.getString("md","username","qqq");
+      String password = ini.getString("md","password","qqq");
+      String remoteDir = ini.getString("md","remote_dir","qqq"); 
+      String localDir = ini.getString("settings", "local_dir", "qqq");
       f = new MyFTP(hostname, username, password);
       f.connect();
-      log.info "Uploading files to MD. Remote host parameters:" + username + "@" + hostname + ":" + remoteDir;
+      log.add("info", "Uploading files to MD. Remote host parameters:" + username + "@" + hostname + ":" + remoteDir;
       f.uploadFiles(localDir, remoteDir, fileMask);
     } finally {
       f.disconnect();

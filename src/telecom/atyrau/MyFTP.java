@@ -1,4 +1,13 @@
 package telecom.atyrau;
+
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
+
 class MyFTP {
 
  private FTPClient ftp;
@@ -65,7 +74,7 @@ class MyFTP {
           exists = true;
       }  
 
-      if !exists {       
+      if (!exists) {       
         OutputStream output = new FileOutputStream(localDir + slash + ftpFile.getName());
         ftp.retrieveFile(ftpFile.getName(), output);
         output.close();

@@ -4,24 +4,25 @@ package telecom.atyrau;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.activation.*;
 
 public class Mailer {
    private String to;
    private String from;
    private String host;
+   private String subj;
+   private String mess;
 
 
    public Mailer(String to, String from, String host, String subj, String mess){
      this.to = to;
      this.from = from;
      this.host = host;
-     this.subject = subj;
+     this.subj = subj;
      this.mess = mess;
 
    }
 
-   public void send() {    
+   public void send() throws MessagingException {    
 
       // Get system properties
       Properties properties = System.getProperties();

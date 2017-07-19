@@ -51,7 +51,7 @@ public class Logger {
   }
 
   public String getAllMessages(){
-    return allMessages;
+    return this.allMessages;
   }
 
   public void add(String mType, String mess) throws IOException {

@@ -1,12 +1,9 @@
 package telecom.atyrau;
 
-//author Galiakhmetov Zarif
-import org.apache.commons.net.ftp.*;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.sql.*;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -18,9 +15,9 @@ public class Execute {
   private IniFile ini;
   private MyFTP f; 
   private String fileMask; 
-  private String StringYYYYMMDD;
+  protected String StringYYYYMMDD;
 
-  public Execute(String mode){
+  public Execute(String mode) throws IOException{
     this.log = new Logger();
     this.log.add("info", "Starting..");
     this.ini = new IniFile("md_operator.conf");
@@ -36,23 +33,22 @@ public class Execute {
 	this.log.close();	
   }
 
-  protected void start() {
+  protected void start() throws Exception {
     try {
-      clearFolder(ini.getString("settings","local_dir");      
+      clearFolder(ini.getString("settings","local_dir","qqq"));      
       downloadFiles();
       uploadFilesToArch();
       uploadFilesToMD();  
-      (new Mailer(ini.getString("email","to"),
-        ini.getString("email","from"),
-        ini.getString("email","host"),
-        ini.getString("email","subj"),
-        ini.getString("email",log.getAllMessages))).send();      
-    } finally {  
-       	
-    }
-    } catch(Exception ex) {
-      log.error ex;
+      (new Mailer(ini.getString("email","to",""),
+        ini.getString("email","from",""),
+        ini.getString("email","host",""),
+        ini.getString("email","subj",""),
+        ini.getString("email",this.log.getAllMessages(),""))).send();      
+    } catch (Exception ex) {
+      this.log.add("error","Error!") ;
       throw ex;      
+    } finally {
+    	
     }
   }
 
@@ -65,14 +61,14 @@ public class Execute {
       file.delete();
   }
    
-private ArrayList getFilesDB() {
-	FileReader fr;
-	BufferedReader br;
+private ArrayList<String> getFilesDB() throws IOException {
+	FileReader fr = null;
+	BufferedReader br = null;
     try{
        fr = new FileReader(this.mode+".txt");
-       BufferedReader br = new BufferedReader(fr);       
+       br = new BufferedReader(fr);       
        String strLine;
-       ArrayList ar = new ArrayList();
+       ArrayList<String> ar = new ArrayList<String>();
        while ((strLine = br.readLine()) != null) {
           ar.add(strLine);
        }  
@@ -86,7 +82,7 @@ private ArrayList getFilesDB() {
       }       
     }   
   }
-  protected void downloadFiles(){
+  protected void downloadFiles() throws IOException{
     try {
       String hostname = ini.getString(mode,"hostname","qqq");
       String username = ini.getString(mode,"username","qqq");
@@ -105,13 +101,13 @@ private ArrayList getFilesDB() {
     }    
   }
 
-  protected void uploadFilesToArch(){
+  protected void uploadFilesToArch() throws IOException{
     try {
       String hostname = ini.getString("arch","hostname","qqq");
       String username = ini.getString("arch","username","qqq");
       String password = ini.getString("arch","password","qqq");
       String remoteDir = ini.getString("arch","remote_dir","qqq");
-      String localDir = ini.getString("settings", "local_dir", "qqq")
+      String localDir = ini.getString("settings", "local_dir", "qqq");
       f = new MyFTP(hostname, username, password);
       f.connect();
       if (!remoteDir.endsWith("/"))
@@ -126,8 +122,9 @@ private ArrayList getFilesDB() {
     } finally {
       f.disconnect();
     }  
-
-  protected void uploadFilesToMD(){  
+  }
+  
+  protected void uploadFilesToMD() throws IOException{  
     try {
       String hostname = ini.getString("md","hostname","qqq");
       String username = ini.getString("md","username","qqq");
@@ -136,7 +133,7 @@ private ArrayList getFilesDB() {
       String localDir = ini.getString("settings", "local_dir", "qqq");
       f = new MyFTP(hostname, username, password);
       f.connect();
-      log.add("info", "Uploading files to MD. Remote host parameters:" + username + "@" + hostname + ":" + remoteDir;
+      log.add("info", "Uploading files to MD. Remote host parameters:" + username + "@" + hostname + ":" + remoteDir);
       f.uploadFiles(localDir, remoteDir, fileMask);
     } finally {
       f.disconnect();
@@ -147,27 +144,14 @@ private ArrayList getFilesDB() {
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DAY_OF_MONTH, daysBack);
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-    strWorkdate = sdf.format(cal.getTime());
+    String strWorkdate = sdf.format(cal.getTime());
     String pref = strWorkdate.substring(0, 4) + strWorkdate.substring(4, 6) +
     strWorkdate.substring(6, 8);
     return pref;
-  }  
+  } 
+  
 }
 
-public ExecuteSip extends Execute{
-
-}
-
-public ExecuteSI2000 extends Execute{
-  public ExecuteSI2000(){
-    fileMmask = "\\w\\d{4}" + StringYYYYMMDD + "\\d{6}.ama"; //i117020160901135064.ama
-  }
-
-}
-
-public ExecuteSI3000 extends Execute{
-
-}
 
 
 

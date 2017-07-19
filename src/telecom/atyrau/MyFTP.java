@@ -7,6 +7,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import org.apache.commons.net.ftp.FTP;
@@ -58,7 +59,7 @@ class MyFTP {
   }
  }
 
- public void downloadFiles(String localDir, String remoteDir, String fileMask, String[] exceptFiles ) throws IOException {
+ public void downloadFiles(String localDir, String remoteDir, String fileMask, ArrayList exceptFiles ) throws IOException {
    if (remoteDir != "")
      ftp.changeWorkingDirectory(remoteDir);
    

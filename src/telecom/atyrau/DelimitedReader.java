@@ -9,7 +9,7 @@ public class DelimitedReader extends TextReader {
   
   public DelimitedReader(String path, char delimiter) throws FileNotFoundException{
     super(path);
-    this.delimiter = delimiter;
+    this.setDelimiter(delimiter);
   }
 
   protected int parseLine(String line) {
@@ -27,5 +27,13 @@ public class DelimitedReader extends TextReader {
       idx++;
     }
     return idx;
-  }  
+  }
+
+public char getDelimiter() {
+	return delimiter;
+}
+
+public void setDelimiter(char delimiter) {
+	this.delimiter = delimiter;
+}  
 }  

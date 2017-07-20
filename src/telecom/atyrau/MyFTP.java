@@ -59,7 +59,7 @@ class MyFTP {
   }
  }
 
- public void downloadFiles(String localDir, String remoteDir, String fileMask, ArrayList exceptFiles ) throws IOException {
+ public void downloadFiles(String localDir, String remoteDir, String fileMask, ArrayList<String> exceptFiles ) throws IOException {
    if (remoteDir != "")
      ftp.changeWorkingDirectory(remoteDir);
    

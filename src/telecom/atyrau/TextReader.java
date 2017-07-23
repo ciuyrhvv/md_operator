@@ -21,14 +21,14 @@ public abstract class TextReader {
     try {
 		fr.close();
 	} catch (IOException e) {
-		// TODO Auto-generated catch block
+		e.printStackTrace();
 	}
     }
     if (br != null) {
     try {
 		br.close();
 	} catch (IOException e) {
-		// TODO Auto-generated catch block
+		e.printStackTrace();
 	}
     }  
   }
@@ -48,13 +48,12 @@ public abstract class TextReader {
   }
 
   public boolean nextLine() throws IOException{
-    int n = 0;    
     boolean success = false;
     
     String thisLine = br.readLine();
 
     if (thisLine != null) {
-      n = parseLine(thisLine);
+      parseLine(thisLine);
       success = true;
     } 
     

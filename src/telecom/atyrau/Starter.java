@@ -6,7 +6,7 @@ public class Starter {
 		Execute e = null;
 		try {
 
-			String mode = args[0];
+			String mode = "sip";
 
 			switch (mode) {
 			case "sip":
@@ -24,6 +24,7 @@ public class Starter {
 				e.start();
 
 		} catch (Exception ex) {
+			ex.printStackTrace();
 
 		}
 	}

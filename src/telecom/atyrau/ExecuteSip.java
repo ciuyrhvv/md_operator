@@ -6,7 +6,8 @@ public class ExecuteSip extends Execute {
 
 	public ExecuteSip(String mode) throws IOException {
 		super(mode);
-		// TODO Auto-generated constructor stub
+	    //String fileMmask = "\\w\\d{4}" + StringYYYYMMDD + "\\d{6}.ama"; //i117020160901135064.ama
+		this.fileMask = "(scrn)(.*)(\\.txt)";
 	}
 
 }

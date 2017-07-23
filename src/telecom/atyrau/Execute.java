@@ -14,8 +14,11 @@ public class Execute {
   private Logger log; 
   private IniFile ini;
   private MyFTP f; 
-  private String fileMask; 
-  protected String StringYYYYMMDD;
+  protected String fileMask; 
+  protected String yyyyMMdd;
+  protected String yyyyMMddHHmmssS;
+  protected int daysBack;
+  protected String localDir;
 
   public Execute(String mode) throws IOException{
     this.log = new Logger();
@@ -23,10 +26,15 @@ public class Execute {
     this.ini = new IniFile("md_operator.conf");
     this.f = null;
     this.fileMask = null; 
-    this.StringYYYYMMDD = 
-    		getWorkDate(Integer.parseInt(this.
-    				ini.getString("settings","days_back","-1")));
+    this.daysBack = Integer.parseInt(ini.getString("settings","days_back","-1"));
+    this.yyyyMMddHHmmssS = getWorkDate(true, this.daysBack);
+    this.yyyyMMdd = this.yyyyMMddHHmmssS.substring(0,8);
     this.mode = mode;
+    
+    String slash = System.getProperty("file.separator");
+    this.localDir = ini.getString("settings", "local_dir", "qqq");    
+    if (!localDir.endsWith(slash))
+      localDir +=  slash + this.mode + slash + this.yyyyMMddHHmmssS + slash;	    
   }
   
   public void close(){
@@ -35,7 +43,7 @@ public class Execute {
 
   protected void start() throws Exception {
     try {
-      clearFolder(ini.getString("settings","local_dir","qqq"));      
+      //clearFolder(ini.getString("settings","local_dir","qqq"));      
       downloadFiles();
       uploadFilesToArch();
       uploadFilesToMD();  
@@ -46,9 +54,7 @@ public class Execute {
         ini.getString("email",this.log.getAllMessages(),""))).send();      
     } catch (Exception ex) {
       this.log.add("error","Error!") ;
-      throw ex;      
-    } finally {
-    	
+      throw ex;    
     }
   }
 
@@ -79,7 +85,7 @@ private ArrayList<String> getFilesDB() throws IOException {
       }
       if (br != null) {
         br.close();
-      }       
+      }      
     }   
   }
   protected void downloadFiles() throws IOException{
@@ -88,14 +94,17 @@ private ArrayList<String> getFilesDB() throws IOException {
       String username = ini.getString(mode,"username","qqq");
       String password = ini.getString(mode,"password","qqq");
       String remoteDir = ini.getString(mode,"remote_dir","qqq");
-      String localDir = ini.getString(mode,"local_dir","qqq");
+      //String localDir = ini.getString("settings","local_dir","qqq");      
+    	   
+      clearFolder(localDir);
+      
       f = new MyFTP(hostname, username, password);
       f.connect();
       log.add("info","Downloading files. Local directory " + 
-    		  localDir + "; Remote host parameters:" + 
+    		  this.localDir + "; Remote host parameters:" + 
     		  username + "@" + hostname + ":" + remoteDir);
 
-      f.downloadFiles(localDir, remoteDir, fileMask, getFilesDB());
+      f.downloadFiles(this.localDir, remoteDir, this.fileMask,  this.daysBack, getFilesDB());
     } finally {
         f.disconnect();
     }    
@@ -107,18 +116,19 @@ private ArrayList<String> getFilesDB() throws IOException {
       String username = ini.getString("arch","username","qqq");
       String password = ini.getString("arch","password","qqq");
       String remoteDir = ini.getString("arch","remote_dir","qqq");
-      String localDir = ini.getString("settings", "local_dir", "qqq");
+      //String localDir = ini.getString("settings", "local_dir", "qqq");
       f = new MyFTP(hostname, username, password);
       f.connect();
+      
       if (!remoteDir.endsWith("/"))
-        remoteDir = remoteDir + "/";
+          remoteDir = remoteDir + "/";
     
       log.add("info", "Uploading files to ARCH. Remote host parameters:" + 
          username + "@" + hostname + ":" + remoteDir);
 
-      f.uploadFiles(localDir,
-        remoteDir + StringYYYYMMDD.substring(0, 4) + "/" +
-        StringYYYYMMDD.substring(4, 6), fileMask);
+      f.uploadFiles(this.localDir,
+        remoteDir + this.yyyyMMdd.substring(0, 4) + "/" +
+        this.yyyyMMdd.substring(4, 6), fileMask);
     } finally {
       f.disconnect();
     }  
@@ -140,15 +150,25 @@ private ArrayList<String> getFilesDB() throws IOException {
     }
   }
 
-  private String getWorkDate(int daysBack) {
+  private String getWorkDate(boolean full, int daysBack) {
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DAY_OF_MONTH, daysBack);
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-    String strWorkdate = sdf.format(cal.getTime());
-    String pref = strWorkdate.substring(0, 4) + strWorkdate.substring(4, 6) +
-    strWorkdate.substring(6, 8);
-    return pref;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssS");
+    String strFull = sdf.format(cal.getTime());
+    String strShort = strFull.substring(0, 8);
+    
+    String res = "";
+    
+    if (full){
+    	res = strFull;
+    }
+    else {
+    	res = strShort;	
+    }
+    	
+    return res;
   } 
+   
   
 }
 

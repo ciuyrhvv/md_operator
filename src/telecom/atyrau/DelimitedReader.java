@@ -2,8 +2,6 @@ package telecom.atyrau;
 
 import java.io.FileNotFoundException;
 
-//-----------DelimitedReader
-
 public class DelimitedReader extends TextReader {
   private char delimiter;
   

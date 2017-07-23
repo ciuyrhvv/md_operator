@@ -63,7 +63,7 @@ class MyFTP {
 
 	public void uploadFiles(String localDir, String remoteDir, String fileMask)
 			throws IOException {
-		if (remoteDir != "") {
+		if (!!remoteDir.equals("")) {
 			// ftp.makeDirectory(remoteDir);
 			if (!makeDirectories(remoteDir))
 				throw new IOException("Could't create a folder");

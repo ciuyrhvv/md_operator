@@ -28,7 +28,7 @@ public class Logger {
     if (!file.exists()) 
 	  file.createNewFile();
 
-    fw = new FileWriter(file.getName());
+    fw = new FileWriter(file.getName(),true);
     bw = new BufferedWriter(fw);    
 
   }
@@ -69,16 +69,15 @@ public class Logger {
            break;                
     }
     
-    message = "[" + date + "]" + message;
+    message = "[" + date + "]" + message +"\n";
 
-    allMessages = allMessages + message + "\n";
+    allMessages = allMessages + message; ;
 
     if (this.printToConsole)
-      System.out.println(message);
+      System.out.print(message);
    
-    bw.write(message);
-     
-
+    bw.flush();
+    bw.write(message);     
   }
 }
   

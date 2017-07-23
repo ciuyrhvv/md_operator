@@ -27,7 +27,7 @@ public class Execute {
     this.f = null;
     this.fileMask = null; 
     this.daysBack = Integer.parseInt(ini.getString("settings","days_back","-1"));
-    this.yyyyMMddHHmmssS = getWorkDate(true, this.daysBack);
+    this.yyyyMMddHHmmssS = getWorkDate(true, 0);
     this.yyyyMMdd = this.yyyyMMddHHmmssS.substring(0,8);
     this.mode = mode;
     
@@ -47,11 +47,11 @@ public class Execute {
       downloadFiles();
       uploadFilesToArch();
       uploadFilesToMD();  
-      (new Mailer(ini.getString("email","to",""),
-        ini.getString("email","from",""),
-        ini.getString("email","host",""),
-        ini.getString("email","subj",""),
-        ini.getString("email",this.log.getAllMessages(),""))).send();      
+      //(new Mailer(ini.getString("email","to",""),
+      //  ini.getString("email","from",""),
+      //  ini.getString("email","host",""),
+      //  ini.getString("email","subject",""),
+      //  this.log.getAllMessages())).send();      
     } catch (Exception ex) {
       this.log.add("error","Error!") ;
       throw ex;    
@@ -140,7 +140,7 @@ private ArrayList<String> getFilesDB() throws IOException {
       String username = ini.getString("md","username","qqq");
       String password = ini.getString("md","password","qqq");
       String remoteDir = ini.getString("md","remote_dir","qqq"); 
-      String localDir = ini.getString("settings", "local_dir", "qqq");
+      //String localDir = ini.getString("settings", "local_dir", "qqq");
       f = new MyFTP(hostname, username, password);
       f.connect();
       log.add("info", "Uploading files to MD. Remote host parameters:" + username + "@" + hostname + ":" + remoteDir);

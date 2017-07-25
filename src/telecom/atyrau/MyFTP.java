@@ -104,11 +104,12 @@ class MyFTP {
 		}
 	}
 
-	public void downloadFiles(String localDir, String remoteDir,
+	public ArrayList<String> downloadFiles(String localDir, String remoteDir,
 			String fileMask, ArrayList<String> exceptFiles) throws IOException {
 		if (remoteDir != "")
 			ftp.changeWorkingDirectory(remoteDir);
 
+		ArrayList<String> arrFiles = new ArrayList<String>();
 		FTPFile[] ftpFiles = ftp.listFiles("", getFTPFileFilter(fileMask));
 		Boolean exists;
 		for (FTPFile ftpFile : ftpFiles) {
@@ -122,8 +123,10 @@ class MyFTP {
 						+ ftpFile.getName());
 				ftp.retrieveFile(ftpFile.getName(), output);
 				output.close();
+				arrFiles.add(ftpFile.getName());
 			}
-		}
+		}		
+		return arrFiles;
 	}
 
 	public void downloadFiles(String localDir, String remoteDir,

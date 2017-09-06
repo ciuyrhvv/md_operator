@@ -2,8 +2,6 @@ package telecom.executors;
 
 import java.io.IOException;
 
-import telecom.Execute;
-
 public class ExecuteNGN extends Execute {
 
 	public ExecuteNGN(String mode) throws IOException {

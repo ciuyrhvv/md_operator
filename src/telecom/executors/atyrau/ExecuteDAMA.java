@@ -2,7 +2,7 @@ package telecom.executors.atyrau;
 
 import java.io.IOException;
 
-import telecom.Execute;
+import telecom.executors.Execute;
 
 public class ExecuteDAMA extends Execute {
 

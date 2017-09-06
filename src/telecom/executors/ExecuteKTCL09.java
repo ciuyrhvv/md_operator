@@ -2,8 +2,6 @@ package telecom.executors;
 
 import java.io.IOException;
 
-import telecom.Execute;
-
 public class ExecuteKTCL09 extends Execute {
 
 	public ExecuteKTCL09(String mode) throws IOException {

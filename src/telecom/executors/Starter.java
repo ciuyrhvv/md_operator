@@ -1,6 +1,5 @@
-package telecom;
+package telecom.executors;
 
-import telecom.executors.*;
 import telecom.executors.kostanay.*;
 import telecom.executors.atyrau.*;
 

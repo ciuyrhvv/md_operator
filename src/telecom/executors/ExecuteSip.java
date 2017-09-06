@@ -2,8 +2,6 @@ package telecom.executors;
 
 import java.io.IOException;
 
-import telecom.Execute;
-
 public class ExecuteSip extends Execute {
 
 	public ExecuteSip(String mode) throws IOException {

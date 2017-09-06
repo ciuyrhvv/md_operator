@@ -2,8 +2,6 @@ package telecom.executors;
 
 import java.io.IOException;
 
-import telecom.Execute;
-
 public class ExecuteBClient extends Execute {
 
 	public ExecuteBClient(String mode) throws IOException {

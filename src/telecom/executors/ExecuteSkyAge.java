@@ -2,8 +2,6 @@ package telecom.executors;
 
 import java.io.IOException;
 
-import telecom.Execute;
-
 public class ExecuteSkyAge extends Execute {
 
 	public ExecuteSkyAge(String mode) throws IOException {

@@ -2,7 +2,7 @@ package telecom.executors.kostanay;
 
 import java.io.IOException;
 
-import telecom.Execute;
+import telecom.executors.Execute;
 
 public class ExecuteZXJ10AMN extends Execute{
 

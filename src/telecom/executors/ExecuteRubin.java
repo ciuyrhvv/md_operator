@@ -2,8 +2,6 @@ package telecom.executors;
 
 import java.io.IOException;
 
-import telecom.Execute;
-
 public class ExecuteRubin extends Execute {
 
 	public ExecuteRubin(String mode) throws IOException {

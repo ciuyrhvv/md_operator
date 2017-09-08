@@ -10,8 +10,11 @@ public class Starter {
 		Execute e = null;
 		try {
 
-			String mode = //"cc8_lis"; 
-					 args[0];
+			String mode =
+					args[0];
+					 //"s12"; 
+					 //"cc8_lis"; 
+					 
 			
 			switch (mode) {
 			case "bclient":

@@ -82,7 +82,7 @@ public class Execute {
 		}
 	}
 
-	private void clearFolder(String localDir) {
+	protected void clearFolder(String localDir) {
 		File dir = new File(localDir);				
 		if (!dir.exists())		
 		  dir.mkdirs();
@@ -264,6 +264,8 @@ public class Execute {
 		if (m) {
 			rd = rd.replaceAll("%YYYY%", strYYYY);
 		}		
+		
+		m = Pattern.compile(".*%YY%.*").matcher(rd).matches();
 		
 		if (m) {
 			rd = rd.replaceAll("%YY%", strYY);

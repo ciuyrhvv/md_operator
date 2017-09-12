@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
@@ -55,26 +57,25 @@ public class ExecuteCC8LIS extends Execute{
 	protected void start() throws Exception {		 
 		String subj = ini.getString("email","subject","");
 		try {
-			downloadFiles();
+			File[] files = downloadFiles();
 			
-			if (this.files.size() > 0) {
+			if (files.length > 0) {
 				
-	         	uploadFilesToArch();
+	         	uploadFilesToArch(files);
+	         	
+	         	List <File> aFiles = new ArrayList<File>();	         		         	
 							
-				for(String fileName : files ) {
-					
-					File rarFile = new File(localDir + fileName);
-					
-					File[] unrFiles = unRarFile(rarFile);
-					
-					for(File unrFile : unrFiles) {	
-						
-						uploadFilesToMD(unrFile.getName());
-						
-					}	
+				for(File file : files ) {
+										
+					File[] unrFiles = unRarFile(file);
+														
+					aFiles.addAll(Arrays.asList(unrFiles));					
+
 				}
+												
+				uploadFilesToMD(aFiles.toArray(new File[aFiles.size()]));
 								
-				setFilesDB(this.files);
+				setFilesDB(files);
 			}			  		 			
 		} catch (Exception ex) {
 			this.log.add("error", ex.toString());

@@ -76,6 +76,22 @@ public class MyFTP {
 			input.close();
 		}
 	}
+	
+	public void uploadFiles(File[] aFiles, String remoteDir)
+			throws IOException {
+		if (!remoteDir.equals("")) {
+			// ftp.makeDirectory(remoteDir);
+			if (!makeDirectories(remoteDir))
+				throw new IOException("Could't create a folder");
+			ftp.changeWorkingDirectory(remoteDir);
+		}
+
+		for (File file : aFiles) {
+			InputStream input = new FileInputStream(file.getCanonicalPath());
+			ftp.storeFile(file.getName(), input);
+			input.close();
+		}
+	}	
 
 	public void downloadFiles(String localDir, String remoteDir, String fileMask)
 			throws IOException {
@@ -104,12 +120,12 @@ public class MyFTP {
 		}
 	}
 
-	public ArrayList<String> downloadFiles(String localDir, String remoteDir,
+	public File[] downloadFiles(String localDir, String remoteDir,
 			String fileMask, ArrayList<String> exceptFiles) throws IOException {
 		if (remoteDir != "")
 			ftp.changeWorkingDirectory(remoteDir);
 
-		ArrayList<String> arrFiles = new ArrayList<String>();
+		ArrayList<File> aFiles = new ArrayList<File>();
 		FTPFile[] ftpFiles = ftp.listFiles("", getFTPFileFilter(fileMask));
 		Boolean exists;
 		for (FTPFile ftpFile : ftpFiles) {
@@ -119,22 +135,26 @@ public class MyFTP {
 					exists = true;
 			}
 			if (!exists) {
-				OutputStream output = new FileOutputStream(localDir
-						+ ftpFile.getName());
+				String strFile = localDir + ftpFile.getName();
+				
+				OutputStream output = new FileOutputStream(strFile);
 				ftp.retrieveFile(ftpFile.getName(), output);
 				output.close();
-				arrFiles.add(ftpFile.getName());
+				
+				File file = new File(strFile);
+				aFiles.add(file);
 			}
 		}		
-		return arrFiles;
+		return aFiles.toArray(new File[aFiles.size()]);
 	}
 
-	public ArrayList<String> downloadFiles(String localDir, String remoteDir,
+	public File[] downloadFiles(String localDir, String remoteDir,
 			String fileMask, int daysBack, ArrayList<String> exceptFiles)
 			throws IOException {
 		if (!remoteDir.equals(""))
 			ftp.changeWorkingDirectory(remoteDir);
-		ArrayList<String> arrFiles = new ArrayList<String>();
+		ArrayList<File> aFiles = new ArrayList<File>();
+		
 		FTPFile[] ftpFiles = ftp.listFiles("",
 				getFTPFileFilter(fileMask, daysBack));
 		Boolean exists;
@@ -147,15 +167,18 @@ public class MyFTP {
 				}	
 			}
 			if (!exists) {
-				OutputStream output = new FileOutputStream(localDir
-						+ ftpFile.getName());
+				String strFile = localDir + ftpFile.getName();
+				
+				OutputStream output = new FileOutputStream(strFile);
 				ftp.retrieveFile(ftpFile.getName(), output);
 				output.close();
-				arrFiles.add(ftpFile.getName());
+				
+				File file = new File(strFile);
+				aFiles.add(file);
 
 			}
 		}
-		return arrFiles;		
+		return aFiles.toArray(new File[aFiles.size()]);		
 	}
 
 	private boolean makeDirectories(String dirPath) throws IOException {

@@ -1,10 +1,14 @@
 package telecom.executors.kostanay;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import telecom.MyFTP;
 import telecom.executors.Execute;
 import telecom.Mailer;
@@ -18,17 +22,18 @@ public class ExecuteS12WRAMTS extends Execute{
 	}
 	
 	
-	private String compressFile(String dir, String filename, String fileNewName) throws IOException{
-
+	private File compressFile(File file, String strFileNewName) throws IOException{
+		String slash = System.getProperty("file.separator");
+		
 		byte[] buffer = new byte[1024];
 		
-		String zipFile = dir + fileNewName + ".zip";
+		String zipFile = file.getParentFile().getCanonicalPath() + slash + strFileNewName + ".zip";
 		FileOutputStream fos = new FileOutputStream(zipFile);
 		ZipOutputStream zos = new ZipOutputStream(fos);
 		zos.setLevel(9);
-		ZipEntry ze = new ZipEntry(fileNewName + ".db");
+		ZipEntry ze = new ZipEntry(strFileNewName + ".db");
 		zos.putNextEntry(ze);
-		FileInputStream in = new FileInputStream(dir + filename);
+		FileInputStream in = new FileInputStream(file);
 
 		int len;
 		while ((len = in.read(buffer)) > 0) {
@@ -38,13 +43,12 @@ public class ExecuteS12WRAMTS extends Execute{
 		in.close();
 		zos.closeEntry();
 
-		// remember close it
-		zos.close();
+     	zos.close();
 		
-		return zipFile;
+		return new File(zipFile);
 	}	
 	
-	private void uploadFilesToTC(String strFilemask) throws IOException {
+	private void uploadFilesToTC(File[] files) throws IOException {
 		MyFTP ftp = null;
 		try {
 			String hostname = ini.getString("traffic_centre", "hostname", "qqq");
@@ -60,7 +64,7 @@ public class ExecuteS12WRAMTS extends Execute{
 				
 			log.add("info", "Uploading files to TrafficCentre. Remote host parameters:"
 					+ username + "@" + hostname + ":" + remoteDir);
-			ftp.uploadFiles(localDir, remoteDir, strFilemask);
+			ftp.uploadFiles(files, remoteDir);
 		} finally {
 			ftp.disconnect();
 		}		
@@ -70,25 +74,27 @@ public class ExecuteS12WRAMTS extends Execute{
 	protected void start() throws Exception {		 
 		String subj = ini.getString("email","subject","");
 		//String filemask = ini.getString(this.mode, "filemask_tc", "qqq");
-		String filemask = "^18.*\\.zip$";
+		//String filemask = "^18.*\\.zip$";
+		List <File> aFiles = new ArrayList<File>();
 		try {
-			downloadFiles();
-			if (this.files.size() > 0) {
-	         	uploadFilesToArch();
-				uploadFilesToMD(this.fileMask);
+			File[] files = downloadFiles();
+			if (files.length > 0) {
+	         	uploadFilesToArch(files);
+				uploadFilesToMD(files);
 							
-				String fileNewName ="";
-				for(String fileName : files ) {
-					fileNewName = "18_" + fileName.substring(13,15) +
-							fileName.substring(10,12) + 
-							fileName.substring(7,9) +"_"+ fileName.substring(21,22); 
+				for(File file : files) {
+					String strFileNewName = "18_" + file.getName().substring(13,15) +
+							file.getName().substring(10,12) + 
+							file.getName().substring(7,9) +"_"+ file.getName().substring(21,22); 
 					
-					compressFile(localDir, fileName, fileNewName);
+					File zipFile = compressFile(file, strFileNewName);
+					aFiles.add(zipFile);
+					
 					//AMTS.2017.08.24.0000.0
-					//18_010817_0.zip
+					//18_240817_0.zip
 				}
 				
-				uploadFilesToTC(filemask);
+				uploadFilesToTC(aFiles.toArray(new File[aFiles.size()]));
 				setFilesDB(files);
 			}			  		 			
 		} catch (Exception ex) {

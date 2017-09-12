@@ -23,11 +23,12 @@ public class Execute {
 	protected MyFTP f;
 	protected String fileMask;
 	private String yyyyMMdd;
-	private String yyyyMMddHHmmssS;
+	protected String yyyyMMddHHmmssS;
 	private int daysBack;
 	private int daysInc;
-	protected String localDir;
-	protected ArrayList<String> files; 
+	private String localDir;
+	//protected ArrayList<String> files; 
+	//protected File[] files;
 	protected String src_remoteDir; 
 	
 
@@ -38,7 +39,7 @@ public class Execute {
 		this.ini = new IniFile("md_operator.conf");
 		this.f = null;
 		this.fileMask = ini.getString(this.mode, "filemask", "-1");
-		this.files = null;
+		//this.files = null;
 		this.daysBack = Integer.parseInt(ini.getString("settings", "days_back", "0"));
 		this.daysInc = Integer.parseInt(ini.getString(this.mode, "days_inc", "0"));
 		this.yyyyMMddHHmmssS = getWorkDate(true, 0);
@@ -58,10 +59,10 @@ public class Execute {
 	protected void start() throws Exception {		 
 		String subj = ini.getString("email","subject","");
 		try {
-			downloadFiles();
-			if (this.files.size() > 0) {
-	         	uploadFilesToArch();
-				uploadFilesToMD(this.fileMask);
+			File[] files = downloadFiles();
+			if (files.length > 0) {
+	         	uploadFilesToArch(files);
+				uploadFilesToMD(files);
 				setFilesDB(files);
 			}			  		 			
 		} catch (Exception ex) {
@@ -82,16 +83,13 @@ public class Execute {
 		}
 	}
 
-	protected void clearFolder(String localDir) {
+	protected void prepareLocalDir(String localDir) {
 		File dir = new File(localDir);				
 		if (!dir.exists())		
 		  dir.mkdirs();
-		//File[] files = dir.listFiles();
-		//for (File file : files)
-		//	file.delete();
 	}
 
-	private ArrayList<String> getFilesDB() throws IOException {
+	protected ArrayList<String> getFilesDB() throws IOException {
 		FileReader fr = null;
 		BufferedReader br = null;
 		String slash = System.getProperty("file.separator");
@@ -114,7 +112,7 @@ public class Execute {
 		}
 	}
 
-	protected void setFilesDB(ArrayList <String> ar) throws IOException {
+	protected void setFilesDB(File[] files) throws IOException {
 		File file = null;
 		FileWriter fw = null;
 		BufferedWriter bw = null;
@@ -123,11 +121,10 @@ public class Execute {
 			file = new File("db" + slash + this.mode + ".db");
 			fw = new FileWriter(file.getPath(), true);
 			
-			//System.out.println(file.getCanonicalPath() + " " + file.getAbsolutePath() + " " + file.getPath());
 			bw = new BufferedWriter(fw);
 			
-			for(String strFile: ar) {
-				bw.write(strFile+"\n");				
+			for(File f : files) {
+				bw.write(f.getName() + "\n");				
 			}		
 			
 			bw.flush();
@@ -149,7 +146,7 @@ public class Execute {
 		}
 	}
 
-	protected void downloadFiles() throws IOException {
+	protected File[] downloadFiles() throws IOException {
 		try {
 			String hostname = ini.getString(mode, "hostname", "qqq");
 			String username = ini.getString(mode, "username", "qqq");
@@ -158,7 +155,7 @@ public class Execute {
 			
 			remoteDir = getDatifiedPath(remoteDir);
 
-			clearFolder(localDir);
+			prepareLocalDir(localDir);
 
 			f = new MyFTP(hostname, username, password);
 			f.connect();
@@ -166,24 +163,23 @@ public class Execute {
 					+ this.localDir + "; Remote host parameters:" + username
 					+ "@" + hostname + ":" + remoteDir);
 			
-			this.files = 
-		    	f.downloadFiles(this.localDir, remoteDir, this.fileMask,
-		    			this.daysBack, getFilesDB());
-			
-			//this.setFilesDB(ar);
-			
-			log.add("info", "Downloaded files count: " + this.files.size());
+			File[] files =
+		    	f.downloadFiles(this.localDir, remoteDir, this.fileMask, this.daysBack, this.getFilesDB());
+						
+			log.add("info", "Downloaded files count: " + files.length);
 			
 			log.add("info", "Downloaded files: ");
-			for (String file: this.files)				
-				log.add("info", file);						
+			for (File file: files)				
+				log.add("info", file.getName());	
+			return files;
 			
 		} finally {
 			f.disconnect();
 		}
+		
 	}
 
-	protected void uploadFilesToArch() throws IOException {
+	protected void uploadFilesToArch(File[] files) throws IOException {
 		try {
 			String hostname = ini.getString("arch", "hostname", "qqq");
 			String username = ini.getString("arch", "username", "qqq");
@@ -202,13 +198,13 @@ public class Execute {
 			log.add("info", "Uploading files to ARCH. Remote host parameters:"
 					+ username + "@" + hostname + ":" + remoteDir);
 
-			f.uploadFiles(this.localDir, remoteDir, fileMask);
+			f.uploadFiles(files, remoteDir);
 		} finally {
 			f.disconnect();
 		}
 	}
 
-	protected void uploadFilesToMD(String strFileMask) throws IOException {
+	protected void uploadFilesToMD(File[] files) throws IOException {
 		try {
 			String hostname = ini.getString("md", "hostname", "qqq");
 			String username = ini.getString("md", "username", "qqq");
@@ -219,12 +215,10 @@ public class Execute {
 
 			if (!remoteDir.endsWith("/"))
 				remoteDir = remoteDir + "/";
-			
-			//String rd = remoteDir + ini.getString(mode, "md_subdir", "qqq") + "/";
-			
+					
 			log.add("info", "Uploading files to MD. Remote host parameters:"
-					+ username + "@" + hostname + ":" + remoteDir + strFileMask);
-			f.uploadFiles(localDir, remoteDir, strFileMask);
+					+ username + "@" + hostname + ":" + remoteDir + files);
+			f.uploadFiles(files, remoteDir);
 		} finally {
 			f.disconnect();
 		}

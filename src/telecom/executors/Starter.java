@@ -11,8 +11,9 @@ public class Starter {
 		try {
 
 			String mode =
-					args[0];
-					 //"s12"; 
+					 //args[0];
+					 //"sip";
+					 "s12"; 
 					 //"cc8_lis"; 
 					 
 			

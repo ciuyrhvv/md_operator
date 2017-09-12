@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -49,37 +50,43 @@ public class ExecuteS12 extends Execute {
 
 		String subj = ini.getString("email", "subject", "");
 		try {
-			downloadFiles();
-			if (this.files.size() > 0) {
-				uploadFilesToArch();
+			File[] files = downloadFiles();
+			if (files.length > 0) {
+				
+				uploadFilesToArch(files);
 
 				String filemask = ini.getString(this.mode, "filemask", "qqq");
-				// String reportmask = ini.getString(this.mode, "reportmask", "qqq");
+				
+				
+	         	List <File> aFiles = new ArrayList<File>();	         		         	
+         	         	
+				for (File zipFile : files) {
 
-				for (String fileName : files) {
-
-					if (Pattern.compile(filemask).matcher(fileName).matches()) {
-						
-						File zipFile = new File(localDir + fileName);
+					if (Pattern.compile(filemask).matcher(zipFile.getName()).matches()) {					
 						
 						File[] unzFiles = unZipFile(zipFile);
 						
 						for (File unzFile : unzFiles) {
 							
-							String unzDir = unzFile.getCanonicalFile().getParent() + slash;
-							String unzNewFile = 									
+							String strUnzDir = unzFile.getCanonicalFile().getParent() + slash;
+							String strUnzNewFile = 									
 									 zipFile.getName().substring(0,
 											zipFile.getName().lastIndexOf(getFileExtension(zipFile.getName())))
 									+ "_" + unzFile.getName();
 							
-							unzFile.renameTo(new File(unzDir + unzNewFile));
-							uploadFilesToMD(unzNewFile);
+							
+							File unzNewFile = new File(strUnzDir + strUnzNewFile);
+							
+							unzFile.renameTo(unzNewFile);
+							
+							aFiles.add(unzNewFile);																				
+
 						}
 					}					
 				}
 				
-				
-				setFilesDB(this.files);
+				uploadFilesToMD(aFiles.toArray(new File[aFiles.size()]));				
+				setFilesDB(files);
 			}
 		} catch (Exception ex) {
 			this.log.add("error", ex.toString());

@@ -58,7 +58,7 @@ public class ExecuteSip extends Execute {
 					 this.log.getAllMessages())).send();			
 		}
 	}	
-
+	
 	private File getMergedFile(File[] files, String outFilename) throws IOException {
 		String slash = System.getProperty("file.separator");
 
@@ -111,9 +111,9 @@ public class ExecuteSip extends Execute {
 				fr.close();
 			}
 		}
-	}	
+	}	//bw.write("{" + this.pieceName + "}" + "\n");
 	
-	protected void setFilesDB(ArrayList <String> ar) throws IOException {
+	protected void setFilesDB(File[] files) throws IOException {
 		File file = null;
 		FileWriter fw = null;
 		BufferedWriter bw = null;
@@ -127,9 +127,9 @@ public class ExecuteSip extends Execute {
 			
 			bw.write("{" + this.pieceName + "}" + "\n");	
 			
-			for(String strFile: ar) {
-				bw.write(strFile+"\n");				
-			}		
+			for(File f : files) {
+				bw.write(f.getName() + "\n");				
+			}	
 			
 			bw.flush();
 			

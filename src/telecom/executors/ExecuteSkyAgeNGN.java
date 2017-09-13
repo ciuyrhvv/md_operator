@@ -112,7 +112,7 @@ public class ExecuteSkyAgeNGN extends Execute {
 		}
 	}	
 	
-	protected void setFilesDB(ArrayList <String> ar) throws IOException {
+	protected void setFilesDB(File[] files) throws IOException {
 		File file = null;
 		FileWriter fw = null;
 		BufferedWriter bw = null;
@@ -126,9 +126,9 @@ public class ExecuteSkyAgeNGN extends Execute {
 			
 			bw.write("{" + this.pieceName + "}" + "\n");	
 			
-			for(String strFile: ar) {
-				bw.write(strFile+"\n");				
-			}		
+			for(File f : files) {
+				bw.write(f.getName() + "\n");				
+			}	
 			
 			bw.flush();
 			

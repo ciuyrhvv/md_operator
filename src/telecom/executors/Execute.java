@@ -83,7 +83,7 @@ public class Execute {
 		}
 	}
 
-	protected void prepareLocalDir(String localDir) {
+	private void prepareLocalDir(String localDir) {
 		File dir = new File(localDir);				
 		if (!dir.exists())		
 		  dir.mkdirs();
@@ -168,9 +168,13 @@ public class Execute {
 						
 			log.add("info", "Downloaded files count: " + files.length);
 			
-			log.add("info", "Downloaded files: ");
-			for (File file: files)				
-				log.add("info", file.getName());	
+			if (files.length > 0) {
+				log.add("info", "Downloaded files: ");
+			
+				for (File file: files)				
+					log.add("info", "File: " + file.getName() + ". Size: " + file.length() + " bytes.");
+			}	
+			
 			return files;
 			
 		} finally {
@@ -217,7 +221,11 @@ public class Execute {
 				remoteDir = remoteDir + "/";
 					
 			log.add("info", "Uploading files to MD. Remote host parameters:"
-					+ username + "@" + hostname + ":" + remoteDir + files);
+					+ username + "@" + hostname + ":" + remoteDir);
+			
+			for(File file : files) 
+				log.add("info", "File: " + file.getName() + ". Size: " + file.length() + " bytes.");
+			
 			f.uploadFiles(files, remoteDir);
 		} finally {
 			f.disconnect();

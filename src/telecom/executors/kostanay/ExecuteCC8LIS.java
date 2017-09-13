@@ -19,7 +19,6 @@ public class ExecuteCC8LIS extends Execute{
 
 	public ExecuteCC8LIS(String mode) throws IOException {
 		super(mode);
-		// TODO Auto-generated constructor stub
 	}
 	
 	@SuppressWarnings("resource")
@@ -28,10 +27,7 @@ public class ExecuteCC8LIS extends Execute{
 		
 		ArrayList<File> fileList = new ArrayList<>();
 		
-		//File f = new File(file.getCanonicalPath());
-		Archive a = null;
-
-	    a = new Archive(new FileVolumeManager(file));
+		Archive a = new Archive(new FileVolumeManager(file));
 
 	    String extractedFile = null;
 		if (a != null) {
@@ -41,6 +37,8 @@ public class ExecuteCC8LIS extends Execute{
 				extractedFile = fh.getFileNameString().trim();
 				String strOutFile = file.getCanonicalFile().getParent() + slash + extractedFile;
 				File out = new File(strOutFile);
+				if (out.exists()) 
+				  throw new IOException(out.getCanonicalPath() + " allready exists. JUNRAR error.");
 				fileList.add(out);
 				FileOutputStream os = new FileOutputStream(out);
 				a.extractFile(fh, os);

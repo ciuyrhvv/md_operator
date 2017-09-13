@@ -18,21 +18,25 @@ public class ExecuteS12WRAMTS extends Execute{
 
 	public ExecuteS12WRAMTS(String mode) throws IOException {
 		super(mode);
-		// TODO Auto-generated constructor stub
 	}
-	
-	
+		
 	private File compressFile(File file, String strFileNewName) throws IOException{
 		String slash = System.getProperty("file.separator");
 		
-		byte[] buffer = new byte[1024];
+		byte[] buffer = new byte[1024];		
 		
 		String zipFile = file.getParentFile().getCanonicalPath() + slash + strFileNewName + ".zip";
+		
 		FileOutputStream fos = new FileOutputStream(zipFile);
+				
 		ZipOutputStream zos = new ZipOutputStream(fos);
+		
 		zos.setLevel(9);
+		
 		ZipEntry ze = new ZipEntry(strFileNewName + ".db");
+		
 		zos.putNextEntry(ze);
+		
 		FileInputStream in = new FileInputStream(file);
 
 		int len;
@@ -73,8 +77,6 @@ public class ExecuteS12WRAMTS extends Execute{
 
 	protected void start() throws Exception {		 
 		String subj = ini.getString("email","subject","");
-		//String filemask = ini.getString(this.mode, "filemask_tc", "qqq");
-		//String filemask = "^18.*\\.zip$";
 		List <File> aFiles = new ArrayList<File>();
 		try {
 			File[] files = downloadFiles();

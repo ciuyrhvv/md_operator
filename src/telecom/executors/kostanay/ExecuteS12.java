@@ -19,28 +19,39 @@ public class ExecuteS12 extends Execute {
 		super(mode);
 		this.fileMask = ini.getString(this.mode, "filemask", "-1")  + "|" + ini.getString(this.mode, "reportmask", "-1");
 
-		// TODO Auto-generated constructor stub
 	}
 
 	private File[] unZipFile(File file) throws IOException {
+		
 		String slash = System.getProperty("file.separator");
 		ArrayList<File> fileList = new ArrayList<>();
-		FileInputStream fin = new FileInputStream(file.getCanonicalPath());
+		FileInputStream fin = new FileInputStream(file);
 		ZipInputStream zin = new ZipInputStream(fin);
 		ZipEntry ze = null;
 
-		byte[] buffer = new byte[1024];
-		while ((ze = zin.getNextEntry()) != null) {
-			String strOutfile = file.getCanonicalFile().getParent() + slash + ze.getName();
-			fileList.add(new File(strOutfile));
-			FileOutputStream fout = new FileOutputStream(strOutfile);
-			for (int c = zin.read(buffer); c > 0; c = zin.read(buffer)) {
-				fout.write(buffer, 0, c);
+		try {
+			byte[] buffer = new byte[1024];
+			while ((ze = zin.getNextEntry()) != null) {
+
+				File outFile = new File(file.getCanonicalFile().getParent() + slash + ze.getName());
+
+				if (outFile.exists())
+					throw new IOException(outFile.getCanonicalPath() + " is allready exists. UNZIP error.");
+
+				FileOutputStream fout = new FileOutputStream(outFile);
+				
+				for (int c = zin.read(buffer); c > 0; c = zin.read(buffer)) {
+					fout.write(buffer, 0, c);
+				}
+				zin.closeEntry();
+				fout.close();
+
+				fileList.add(outFile);
 			}
-			zin.closeEntry();
-			fout.close();
+			
+		} finally {
+			zin.close();
 		}
-		zin.close();
 
 		return fileList.toArray(new File[fileList.size()]);
 	}

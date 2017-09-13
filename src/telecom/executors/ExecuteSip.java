@@ -20,8 +20,6 @@ public class ExecuteSip extends Execute {
 
 	public ExecuteSip(String mode) throws IOException {
 		super(mode);
-	    //String fileMmask = "\\w\\d{4}" + StringYYYYMMDD + "\\d{6}.ama"; //i117020160901135064.ama
-		//this.fileMask = "(scrn)(.*)(\\.txt)";
 		this.pieceName = "scrn_" + this.yyyyMMddHHmmssS + "_txt_bw.txt";
 	
 	}
@@ -64,8 +62,6 @@ public class ExecuteSip extends Execute {
 
 		FileOutputStream fout = new FileOutputStream(files[0].getParentFile().getCanonicalPath() + slash + outFilename);
 		try {
-			// ddMMyyyyHHmmss
-			//Arrays.sort(files, Common.getFilanameComparator(true));
 			for (File file : files) {
 				FileInputStream fin = new FileInputStream(file);
 				try {
@@ -111,7 +107,7 @@ public class ExecuteSip extends Execute {
 				fr.close();
 			}
 		}
-	}	//bw.write("{" + this.pieceName + "}" + "\n");
+	}
 	
 	protected void setFilesDB(File[] files) throws IOException {
 		File file = null;

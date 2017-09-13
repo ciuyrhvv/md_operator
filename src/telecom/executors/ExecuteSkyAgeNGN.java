@@ -20,9 +20,7 @@ public class ExecuteSkyAgeNGN extends Execute {
 	
 	public ExecuteSkyAgeNGN(String mode) throws IOException {
 		super(mode);
-		//this.fileMask = "(scrn_)(.*)(\\.txt)";
-		//scrn_U170730110233AMA_DMS100v30_40514CAA_011.txt
-		this.pieceName = "{scrn_U" + this.yyyyMMddHHmmssS + "AMA-727_DMS100v30_40514CAA_011.txt}";
+		this.pieceName = "scrn_U" + this.yyyyMMddHHmmssS + "AMA-727_DMS100v30_40514CAA_011.txt";
 	}
 
 	protected void start() throws Exception {		 
@@ -63,8 +61,6 @@ public class ExecuteSkyAgeNGN extends Execute {
 
 		FileOutputStream fout = new FileOutputStream(files[0].getParentFile().getCanonicalPath() + slash + outFilename);
 		try {
-			// ddMMyyyyHHmmss
-			//Arrays.sort(files, Common.getFilanameComparator(true));
 			for (File file : files) {
 				FileInputStream fin = new FileInputStream(file);
 				try {

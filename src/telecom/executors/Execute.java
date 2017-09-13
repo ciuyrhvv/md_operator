@@ -27,8 +27,6 @@ public class Execute {
 	private int daysBack;
 	private int daysInc;
 	private String localDir;
-	//protected ArrayList<String> files; 
-	//protected File[] files;
 	protected String src_remoteDir; 
 	
 
@@ -39,7 +37,6 @@ public class Execute {
 		this.ini = new IniFile("md_operator.conf");
 		this.f = null;
 		this.fileMask = ini.getString(this.mode, "filemask", "-1");
-		//this.files = null;
 		this.daysBack = Integer.parseInt(ini.getString("settings", "days_back", "0"));
 		this.daysInc = Integer.parseInt(ini.getString(this.mode, "days_inc", "0"));
 		this.yyyyMMddHHmmssS = getWorkDate(true, 0);

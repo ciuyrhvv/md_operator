@@ -11,8 +11,9 @@ public class Starter {
 		try {
 
 			String mode =
-					 //args[0];
-					 "sip";
+					 args[0];
+					 //"sip";
+					 //"skyage_ngn";
 					 //"s12"; +
 					 //"cc8_lis"; 
 					 //"s12wr_amts";

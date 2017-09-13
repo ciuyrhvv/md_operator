@@ -1,5 +1,8 @@
 package telecom.executors;
 
+//Автор: Галиахметов Зариф.
+//Отдел обработки трафика ООТ РО ДИС г.Алматы
+
 import telecom.executors.kostanay.*;
 import telecom.executors.atyrau.*;
 
